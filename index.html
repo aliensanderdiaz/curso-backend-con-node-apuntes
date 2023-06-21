@@ -1,0 +1,957 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Curso de Backend con nodejs: Api REST con express.js</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+</head>
+
+<body>
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col">
+        <h1>Curso de Backend con nodejs: Api REST con express.js</h1>
+      </div>
+    </div>
+
+    <section class="container">
+      <h3>Sección 2 de 27 - Configuración del entorno de desarrollo para este curso</h3>
+      <pre class="prettyprint">
+
+                > npm init -y
+                > git init
+                > touch .gitignore .editorconfig .eslintrc.json index.js
+            </pre>
+      <p>
+        <a href="https://www.toptal.com/developers/gitignore/">https://www.toptal.com/developers/gitignore/</a>
+        Para generar un archivo .gitignore de manera automatica.
+      </p>
+      <ul>
+        <li>node</li>
+        <li>windows</li>
+        <li>linux</li>
+        <li>macos</li>
+      </ul>
+      <p>
+        <a href="https://editorconfig.org/">https://editorconfig.org/</a> para que todos los
+        desarrolladores tengamos la misma configuración.
+        <br>
+        Se debe instalar la extensión para nuestro editor que en este caso es el visual studio code.
+        <br>
+        <a
+          href="https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig">https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig</a>
+        EditorConfig for VS Code
+      </p>
+
+      <pre class="prettyprint">
+
+
+                # Editor configuration, see https://editorconfig.org
+                root = true
+                
+                [*]
+                charset = utf-8
+                indent_style = space
+                indent_size = 2
+                insert_final_newline = true
+                trim_trailing_whitespace = true
+                
+                [*.js]
+                quote_type = single
+                
+                [*.md]
+                max_line_length = off
+                trim_trailing_whitespace = false
+                
+            </pre>
+
+      <pre class="prettyprint">
+
+                {
+                    "parserOptions": {
+                        "ecmaVersion": 2018
+                    },
+                    "extends": [
+                        "eslint:recommended",
+                        "prettier"
+                    ],
+                    "env": {
+                        "es6": true,
+                        "node": true,
+                        "jest": true
+                    },
+                    "rules": {
+                        "no-console": "warn"
+                    }
+                }
+            </pre>
+
+      <pre class="prettyprint">
+
+                "scripts": {
+                    "dev": "nodemon index.js",
+                    "start": "node index.js",
+                    "lint": "eslint"
+                },
+            </pre>
+
+      <pre class="prettyprint">
+
+                > npm i nodemon eslint eslint-config-prettier eslint-plugin-prettier prettier -D
+            </pre>
+
+      <p>NOTA: Hago un parentesis para aprender sobre eslint</p>
+
+      <p>
+        <a href="https://github.com/feross/eslint-config-standard">https://github.com/feross/eslint-config-standard</a>
+      </p>
+
+      <pre class="prettyprint">
+
+                > npm install --save-dev eslint-config-standard eslint-plugin-promise eslint-plugin-import eslint-plugin-n
+            </pre>
+    </section>
+
+    <hr>
+
+    <section class="container">
+      <h3>Sección 3 de 27 - Instalación de Express y tu primer servidor HTTP</h3>
+      <pre class="prettyprint">
+
+                > npm i express
+
+                //
+
+                const express = require('express')
+                const app = express()
+                const port = 3000
+                
+                app.get('/', (req, res) => {
+                  res.send('Hola mi server en express')
+                })
+                
+                app.listen(port, () => {
+                  console.log('Mi port ' + port)
+                })
+                
+            </pre>
+    </section>
+    <hr>
+
+    <section class="container">
+      <h3>Sección 4 de 27 - Routing con express.js</h3>
+      <pre class="prettyprint">
+
+                app.get('/nueva-ruta', (req, res) => {
+                    res.send('Hola mi nueva ruta')
+                })
+                
+                app.get('/products', (req, res) => {
+                    res.json({
+                        name: 'Computadora Mac',
+                        price: 2000
+                    })
+                })
+            </pre>
+    </section>
+    <hr>
+
+    <section class="container">
+      <h3>Sección 5 de 27 - ¿Qué es una RESTful API?</h3>
+
+    </section>
+    <hr>
+
+    <section class="container">
+      <h3>Sección 6 de 27 - ¡Es tu turno: crea un tutorial!</h3>
+
+    </section>
+    <hr>
+
+    <section class="container">
+      <h3>Sección 7 de 27 - GET: recibir parámetros</h3>
+      <pre class="prettyprint">
+
+                  app.get('/products/:id', (req, res) => {
+
+                    const id = req.params.id
+                  
+                    res.json({
+                      id,
+                      name: 'Computadora Mac',
+                      price: 2000
+                    })
+                  })
+                  
+                  app.get('/categories/:categoryId/products/:productId', (req, res) => {
+                  
+                    const { categoryId, productId } = req.params
+                  
+                    res.json({
+                      categoryId,
+                      productId,
+                      name: 'Computadora Mac',
+                      price: 2000
+                    })
+                  })
+            </pre>
+    </section>
+    <hr>
+
+    <section class="container">
+      <h3>Sección 8 de 27 - GET: parámetros query</h3>
+      <pre class="prettyprint">
+
+                app.get('/users', (req, res) => {
+                    const { limit, offset } = req.query
+                    if (limit && offset) {
+                      res.json({
+                        limit,
+                        offset
+                      })
+                    } else {
+                      res.send('No hay parámetros')
+                    }
+                })
+            </pre>
+      <p>
+        <a href="http://localhost:3000/users?limit=10&offset=5">
+          http://localhost:3000/users?limit=10&offset=5
+        </a>
+      </p>
+      <pre class="prettyprint">
+
+                > npm i faker@5.5.3
+                > npm i @faker-js/faker
+            </pre>
+      <pre class="prettyprint">
+
+                app.get('/products', (req, res) => {
+                    const products = []
+                    const { size } = req.query
+                    const limit = size || 10
+                  
+                    for (let index = 0; index < limit; index++) {
+                      products.push({
+                        name: faker.commerce.productName(),
+                        price: parseInt(faker.commerce.price(), 10),
+                        image: faker.image.urlPicsumPhotos()
+                      })
+                    }
+                    res.json(products)
+                  })
+            </pre>
+    </section>
+    <hr>
+
+    <section class="container">
+      <h3>Sección 9 de 27 - Separación e responsabilidades con express.Router</h3>
+      <pre class="prettyprint">
+
+                > mkdir routes
+                > touch routes/products.router.js
+                > touch routes/index.js
+            </pre>
+
+      <pre class="prettyprint">
+
+                const express = require('express')
+                const router = express.Router()
+                
+                const { faker } = require('@faker-js/faker');
+                
+                router.get('/', (req, res) => {
+                  const products = []
+                  const { size } = req.query
+                  const limit = size || 10
+                
+                  for (let index = 0; index < limit; index++) {
+                    products.push({
+                      name: faker.commerce.productName(),
+                      price: parseInt(faker.commerce.price(), 10),
+                      image: faker.image.urlPicsumPhotos()
+                    })
+                  }
+                  res.json(products)
+                })
+                
+                router.get('/filter', (req, res) => {
+                  res.send('Yo soy un filter')
+                })
+                
+                router.get('/:id', (req, res) => {
+                
+                  const id = req.params.id
+                
+                  res.json({
+                    id,
+                    name: 'Computadora Mac',
+                    price: 2000
+                  })
+                })
+                
+                module.exports = router
+                
+            </pre>
+
+      <pre class="prettyprint">
+
+                const productsRouter = require('./products.router')
+
+                function routerApi(app) {
+                  app.use('/products', productsRouter)
+                }
+                
+                module.exports = routerApi
+                
+            </pre>
+
+      <pre class="prettyprint">
+
+                const routerApi = require('./routes')
+                
+                routerApi(app)
+            </pre>
+    </section>
+    <hr>
+
+    <section class="container">
+      <h3>Sección 10 de 27 - Instalacion de Postman o Insomnia</h3>
+
+    </section>
+    <hr>
+
+    <section class="container">
+      <h3>Sección 11 de 27 - POST: método para crear</h3>
+      <pre class="prettyprint">
+
+                const express = require('express')
+
+                const productsRouter = require('./products.router')
+                
+                function routerApi(app) {
+                  const router = express.Router()
+                  app.use('/api/v1', router)
+                  router.use('/products', productsRouter)
+                }
+                
+                module.exports = routerApi
+                
+            </pre>
+      <p>
+        <a href="http://localhost:3000/api/v1/products?size=4">http://localhost:3000/api/v1/products?size=4</a>
+      </p>
+
+      <pre class="prettyprint">
+
+                app.use(express.json())
+            </pre>
+
+      <pre class="prettyprint">
+
+                router.post('/', (req, res) => {
+                    const body = req.body
+                    
+                    res.json({
+                        message: 'created',
+                        data: body
+                    })
+                })
+            </pre>
+    </section>
+    <hr>
+
+    <section class="container">
+        <h3>Sección 12 de 27 - PUT, PATCH y DELETE</h3>
+        <pre class="prettyprint">
+        
+          router.patch('/:id', (req, res) => {
+            const body = req.body
+            const { id } = req.params
+          
+            res.json({
+              message: 'update partial',
+              data: body,
+              id
+            })
+          })
+          
+          router.put('/:id', (req, res) => {
+            const body = req.body
+            const { id } = req.params
+          
+            res.json({
+              message: 'update total',
+              data: body,
+              id
+            })
+          })
+          
+          router.delete('/:id', (req, res) => {
+          
+            const { id } = req.params
+          
+            res.json({
+              message: 'deleted',
+              id
+            })
+          })
+        </pre>
+    </section>
+    <hr>
+
+    <section class="container">
+        <h3>Sección 13 de 27 - Códigos de estado o HTTP response status code</h3>
+        <p>
+          <a href="http://http.cat/">http://http.cat/</a>
+        </p>
+        <pre class="prettyprint">
+        
+          router.get('/:id', (req, res) => {
+
+            const id = req.params.id
+          
+            if (id == 999) {
+              return res.status(404).json({
+                message: 'not found'
+              })
+            }
+          
+            res.status(200).json({
+              id,
+              name: 'Computadora Mac',
+              price: 2000
+            })
+          })
+          
+          router.post('/', (req, res) => {
+            const body = req.body
+          
+            res.status(201).json({
+              message: 'created',
+              data: body
+            })
+          })
+        </pre>
+    </section>
+    <hr>
+
+    <section class="container">
+        <h3>Sección 14 de 27 - Introducción a servicios: crea tu primer servicio</h3>
+        <pre class="prettyprint">
+        
+            > mkdir services
+            > touch services/product.service.js
+        </pre>
+        <pre class="prettyprint">
+        
+          const { faker } = require('@faker-js/faker');
+
+          class ProductService {
+          
+            constructor() {
+              this.products = []
+              this.generate()
+            }
+          
+            generate() {
+              const limit = 100
+          
+              for (let index = 0; index < limit; index++) {
+                this.products.push({
+                  id: faker.string.uuid(),
+                  name: faker.commerce.productName(),
+                  price: parseInt(faker.commerce.price(), 10),
+                  image: faker.image.urlPicsumPhotos()
+                })
+              }
+            }
+          
+            create() {
+          
+            }
+          
+            find() {
+              return this.products
+            }
+          
+            findOne(id) {
+             return this.products.find( product => product.id === id )
+            }
+          
+            update() {
+          
+            }
+          
+            delete() {
+          
+            }
+          }
+          
+          module.exports = ProductService
+          
+        </pre>
+
+        <pre class="prettyprint">
+
+          const ProductService = require('../services/product.service')
+        
+          const service = new ProductService()
+
+          router.get('/', (req, res) => {
+            const products = service.find()
+            const { size } = req.query
+            const limit = size || 10
+          
+            res.json(products.slice(0, limit))
+          })
+          
+          router.get('/:id', (req, res) => {
+          
+            const id = req.params.id
+          
+            const product = service.findOne( id )
+          
+            if (!product) {
+              return res.status(404).send('not found')
+            }
+          
+            res.status(200).json(product)
+          })
+        </pre>
+    </section>
+    <hr>
+
+    <section class="container">
+        <h3>Sección 15 de 27 - Crear, editar y eliminar</h3>
+        <pre class="prettyprint">
+        
+          create(data) {
+            const newProduct = {
+              id: faker.string.uuid(),
+              ...data
+            }
+            this.products.push(newProduct)
+            return newProduct
+          }
+        
+          update(id, data) {
+            const index = this.products.findIndex(product => product.id === id)
+            console.log({ index })
+            if (index === -1) {
+              return null
+            }
+            this.products[index] = { ...this.products[index], ...data }
+            return this.products[index]
+          }
+        
+          delete(id) {
+            const index = this.products.findIndex(product => product.id === id)
+        
+            if (index === -1) {
+              return null
+            }
+        
+            let productDeleted = { ...this.products[index] }
+            this.products.splice(index, 1)
+            console.log({ length: this.products.length })
+            return productDeleted
+          }
+        </pre>
+        <pre class="prettyprint">
+        
+          router.post('/', (req, res) => {
+            const body = req.body
+            const newProduct = service.create(body)
+          
+            res.status(201).json({
+              message: 'created',
+              data: newProduct
+            })
+          })
+          
+          router.patch('/:id', (req, res) => {
+            const body = req.body
+            const { id } = req.params
+          
+            console.log({ body, id })
+          
+            const productEdited = service.update(id, body)
+          
+            if (!productEdited) {
+              res.status(404).send('not found')
+            }
+          
+            res.json({
+              message: 'update partial',
+              data: productEdited
+            })
+          })
+          
+          router.delete('/:id', (req, res) => {
+          
+            const { id } = req.params
+          
+            const productDeleted = service.delete(id)
+          
+            if (!productDeleted) {
+              return res.status(404).send('not found')
+            }
+          
+            res.json({
+              message: 'deleted',
+              data: productDeleted
+            })
+          })
+        </pre>
+    </section>
+    <hr>
+
+    <section class="container">
+        <h3>Sección 16 de 27 - -Async await y captura de errores</h3>
+        <pre class="prettyprint">
+        
+          async create(data) {
+            const newProduct = {
+              id: faker.string.uuid(),
+              ...data
+            }
+            this.products.push(newProduct)
+            return newProduct
+          }
+        
+          async find() {
+            return new Promise((resolve) => {
+              setTimeout(() => {
+                resolve(this.products)
+              }, 5000);
+            })
+          }
+        
+          async findOne(id) {
+            return this.products.find(product => product.id === id)
+          }
+        
+          async update(id, data) {
+            const index = this.products.findIndex(product => product.id === id)
+            console.log({ index })
+            if (index === -1) {
+              throw new Error('ERROR: not found')
+              // return null
+            }
+            this.products[index] = { ...this.products[index], ...data }
+            return this.products[index]
+          }
+        
+          async delete(id) {
+            const index = this.products.findIndex(product => product.id === id)
+        
+            if (index === -1) {
+              throw new Error('ERROR: not found')
+              // return null
+            }
+        
+            let productDeleted = { ...this.products[index] }
+            this.products.splice(index, 1)
+            console.log({ length: this.products.length })
+            return productDeleted
+          }
+        </pre>
+
+        <pre class="prettyprint">
+        
+          router.get('/', async (req, res) => {
+            const products = await service.find()
+            const { size } = req.query
+            const limit = size || 10
+          
+            res.json(products.slice(0, limit))
+          })
+          
+          router.get('/filter', async (req, res) => {
+            res.send('Yo soy un filter')
+          })
+          
+          router.get('/:id', async (req, res) => {
+          
+            const id = req.params.id
+          
+            const product = await service.findOne(id)
+          
+            if (!product) {
+              return res.status(404).send('not found')
+            }
+          
+            res.status(200).json(product)
+          })
+          
+          router.post('/', async (req, res) => {
+            const body = req.body
+            const newProduct = await service.create(body)
+          
+            res.status(201).json({
+              message: 'created',
+              data: newProduct
+            })
+          })
+          
+          router.patch('/:id', async (req, res) => {
+            try {
+          
+          
+              const body = req.body
+              const { id } = req.params
+          
+              console.log({ body, id })
+          
+              const productEdited = await service.update(id, body)
+          
+              if (!productEdited) {
+                res.status(404).send('not found')
+              }
+          
+              res.json({
+                message: 'update partial',
+                data: productEdited
+              })
+          
+            } catch (error) {
+              res.status(404).json({
+                message: error.message
+              })
+            }
+          })
+          
+          router.put('/:id', async (req, res) => {
+            const body = req.body
+            const { id } = req.params
+          
+            res.json({
+              message: 'update total',
+              data: body,
+              id
+            })
+          })
+          
+          router.delete('/:id', async (req, res) => {
+          
+            try {
+          
+          
+          
+              const { id } = req.params
+          
+              const productDeleted = await service.delete(id)
+          
+              if (!productDeleted) {
+                return res.status(404).send('not found')
+              }
+          
+              res.json({
+                message: 'deleted',
+                data: productDeleted
+              })
+          
+            } catch (error) {
+              res.status(404).json({
+                message: error.message
+              })
+            }
+          })
+        </pre>
+    </section>
+    <hr>
+
+    <section class="container">
+        <h3>Sección 17 de 27 - ¿Qué son los middlewares?</h3>
+        
+    </section>
+    <hr>
+
+    <section class="container">
+        <h3>Sección 18 de 27 - Middleware para HttpErrors</h3>
+        <pre class="prettyprint">
+        
+            > mkdir middlewares
+            > touch middlewares/error.handler.js
+        </pre>
+
+        <pre class="prettyprint">
+        
+          function logErrors(err, req, res, next) {
+            console.log('logErrors')
+            console.error(err)
+            next(err)
+          }
+          
+          function errorHandler(err, req, res, next) {
+            console.log('errorHandler')
+            res.status(500).json({
+              message: err.message,
+              stack: err.stack,
+            })
+          }
+          
+          module.exports = { logErrors, errorHandler }
+          
+        </pre>
+
+        <pre class="prettyprint">
+        
+          routerApi(app)
+
+          app.use(logErrors)
+          app.use(errorHandler)
+        </pre>
+
+        <p>Inducimos un error que puede pasar en produccion</p>
+
+        <pre class="prettyprint">
+        
+          async findOne(id) {
+            this.getTotal()
+            return this.products.find(product => product.id === id)
+          }
+        </pre>
+
+        <p>Capturamos al error y lo pasamos al middleware</p>
+
+        <pre class="prettyprint">
+        
+          router.get('/:id', async (req, res, next) => {
+            try {
+              const id = req.params.id
+          
+              const product = await service.findOne(id)
+          
+              if (!product) {
+                return res.status(404).send('not found')
+              }
+          
+              res.status(200).json(product)
+          
+            } catch (error) {
+              next(error)
+            }
+          })
+        </pre>
+    </section>
+    <hr>
+
+    <section class="container">
+        <h3>Sección 19 de 27 - Manejo de errores con Boom</h3>
+        <pre class="prettyprint">
+        
+            > npm i @hapi/boom
+        </pre>
+
+        <pre class="prettyprint">
+        
+          async findOne(id) {
+            const productDB = this.products.find(product => product.id === id)
+            if (!productDB) {
+              throw boom.notFound('product not found')
+            }
+            if (productDB.isBlock) {
+              throw boom.conflict('product is block')
+            }
+            return productDB
+          }
+        </pre>
+
+        <pre class="prettyprint">
+        
+          router.get('/:id', async (req, res, next) => {
+            try {
+              const id = req.params.id
+          
+              const product = await service.findOne(id)
+          
+              if (!product) {
+                return res.status(404).send('not found')
+              }
+          
+              res.status(200).json(product)
+          
+            } catch (error) {
+              next(error)
+            }
+          })
+        </pre>
+
+        <pre class="prettyprint">
+        
+          function boomErrorHandler(err, req, res, next) {
+            console.log('***********boomErrorHandler')
+            if (err.isBoom) {
+              const { output } = err
+              return res.status(output.statusCode).json(output.payload)
+            }
+            next(err)
+          }
+        </pre>
+
+        <pre class="prettyprint">
+        
+          app.use(logErrors)
+          app.use(boomErrorHandler)
+          app.use(errorHandler)
+        </pre>
+    </section>
+    <hr>
+
+    <section class="container">
+        <h3>Sección 20 de 27 - Validación de datos con Joi</h3>
+        <pre class="prettyprint">
+        
+            > npm i joi
+        </pre>
+    </section>
+    <hr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
