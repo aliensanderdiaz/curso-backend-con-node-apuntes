@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Curso de Backend con Node.js: Base de Datos con PostgreSQL</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col">
+                <h1>Curso de Backend con Node.js: Base de Datos con PostgreSQL</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <ul class="list-group">
+                    <a href="./index.html" class="list-group-item">Volver</a>
+                </ul>
+            </div>
+        </div>
+
+        <section class="container">
+            <h3>Sección 1 de 27 - Persistencia de datos en Node.js</h3>
+
+        </section>
+        <hr>
+
+        <section class="container">
+            <h3>Sección 2 de 27 - Platzi Store: instalación y presentación del proyecto</h3>
+            <p>
+                <a
+                    href="https://github.com/platzi/curso-nodejs-postgres">https://github.com/platzi/curso-nodejs-postgres</a>
+            </p>
+            <pre class="prettyprint">
+
+                > npm i
+            </pre>
+        </section>
+        <hr>
+
+        <section class="container">
+            <h3>Sección 3 de 27 - Instalación Docker</h3>
+            <div class="MaterialLecture-text">
+                <p>Durante el resto del curso vamos a usar Docker para configurar nuestra base de datos y conectarla con
+                    el servidor de Node.js. Para tomar este curso no es necesario saber Docker a profundidad, en cada
+                    clase te explicaremos el paso a paso y los comandos que requerimos para usar Docker. Recuerda que
+                    puedes tomar el <a href="https://platzi.com/cursos/docker/" target="_blank" rel=" noopener">Curso de
+                        Docker</a> para profundizar más en esta herramienta.</p>
+                <p>Según el sistema operativo que utilices puede variar la instalación, así que a continuación te daré
+                    las indicaciones base para la instalación según tu sistema operativo:</p>
+                <h2>Instalación en Windows con WSL (Recomendada) 🐧</h2>
+                <p>Debes descargar el instalador desde la página de <a
+                        href="https://docs.docker.com/desktop/install/windows-install/" target="_blank"
+                        rel=" noopener">Docker for Windows.</a></p>
+                <p>Cuando ya tienes instalado <strong>Docker Desktop</strong> dentro de tus programas debes abrirlo y
+                    debes asegurarte que la opción <strong>“Use the WSL 2 based engine”</strong> está habilitada:</p>
+                <figure><img src="https://i.imgur.com/COPXJpw.png" alt="WSL"></figure>
+                <p>Luego en la sección “Resources &gt; WSL Integration”, asegurarate que la opcion “Enable integration
+                    with my default WSL distro”, este habilitada:</p>
+                <figure><img src="https://i.imgur.com/g20OhlL.png" alt="Resources"></figure>
+                <p>Puedes ver más detalles de Docker con WLS 👉 <a href="https://docs.docker.com/desktop/windows/wsl/"
+                        target="_blank" rel=" noopener">Docker Desktop WSL 2 backend</a></p>
+                <h2>Instalación en Windows 🪟</h2>
+                <p>Debes descargar el instalador desde la página de <a
+                        href="https://docs.docker.com/desktop/install/windows-install/" target="_blank"
+                        rel=" noopener">Docker for Windows.</a></p>
+                <p>Cuando ya tienes instalado <strong>Docker Desktop</strong> dentro de tus programas, una de las cosas
+                    que debes tener en cuenta en la instalación con Windows es que debes contar con <strong>Windows 10
+                        de 64 Bits</strong> o superior y debes habilitar el <strong><a
+                            href="https://docs.docker.com/desktop/install/windows-install/#system-requirements"
+                            target="_blank" rel=" noopener">Hyper-V</a></strong> de Windows.</p>
+                <p>Si quieres conocer los detalles, aquí te dejo el detalle como <a
+                        href="https://learn.microsoft.com/en-us/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v"
+                        target="_blank" rel=" noopener">habilitar <strong>Hyper-V</strong> desde la Interfaz de
+                        Windows</a></p>
+                <figure><img src="https://i.imgur.com/bDSp6d0.png" alt="Hyper-V"></figure>
+                <h2>Instalación en macOS 🍎</h2>
+                <p>En Mac tienes dos opciones. Todo dependerá si tienes los nuevos chips M1 o Intel, ya que hay un
+                    instalable apropiado para ambas arquitecturas de chip. Puedes escoger el instalable desde <a
+                        href="https://docs.docker.com/desktop/install/mac-install/" target="_blank"
+                        rel=" noopener">Install Docker Desktop on Mac</a>.</p>
+                <p>Adicionalmente, si cuentas con los nuevos chips M1, debes ejecutar la siguiente instrucción en tu
+                    terminal <code>softwareupdate --install-rosetta</code></p>
+                <p>Una vez descargues el instalador adecuado, solo debes seguir los pasos y pasar <strong>Docker
+                        Desktop</strong> a tus aplicaciones.</p>
+                <figure><img src="https://i.imgur.com/qH2p2EI.png" alt="drag"></figure>
+                <h2>Instalación en Ubuntu 🐧</h2>
+                <p>Estos son los pasos para instalarlo dentro de Ubuntu, sin embargo, también puedes ver
+                    directamente&nbsp;<a href="https://docs.docker.com/engine/install/ubuntu/" target="_blank"
+                        rel=" noopener">Install Docker Engine on Ubuntu</a></p>
+                <pre><code class="language-bash">sudo apt-get update
+                </code></pre>
+                <pre><code class="language-bash">sudo apt-get install \
+                    ca-certificates \
+                    curl \
+                    gnupg \
+                    lsb-release
+                </code></pre>
+                <pre><code class="language-bash">sudo mkdir -p /etc/apt/keyrings
+                </code></pre>
+                <pre><code class="language-bash">curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+                </code></pre>
+                <pre><code class="language-bash"><span class="hljs-built_in">echo</span> \
+                  <span class="hljs-string">"deb [arch=<span class="hljs-variable">$(dpkg --print-architecture)</span> signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+                  <span class="hljs-variable">$(lsb_release -cs)</span> stable"</span> | sudo tee /etc/apt/sources.list.d/docker.list &gt; /dev/null
+                </code></pre>
+                <pre><code class="language-bash">sudo apt-get update
+                </code></pre>
+                <pre><code class="language-bash">sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+                </code></pre>
+                <pre><code class="language-bash">sudo docker run hello-world
+                </code></pre>
+                <p>Para otras distribuciones de Linux:</p>
+                <ul>
+                    <li><a href="https://docs.docker.com/engine/install/centos/" target="_blank" rel=" noopener">Install
+                            Docker Engine on CentOS</a></li>
+                    <li><a href="https://docs.docker.com/engine/install/debian/" target="_blank" rel=" noopener">Install
+                            Docker Engine on Debian</a></li>
+                    <li><a href="https://docs.docker.com/engine/install/fedora/" target="_blank" rel=" noopener">Install
+                            Docker Engine on Fedora</a></li>
+                </ul>
+            </div>
+        </section>
+        <hr>
+
+        <section class="container">
+            <h3>Sección 4 de 27 - Configuración de Postgres en Docker</h3>
+            <pre class="prettyprint">
+            
+                > mkdir postgres_data
+            </pre>
+            <p>Agregar esa carpeta al gitignore</p>
+            <pre class="prettyprint">
+            
+                version: '3.3'
+
+                services:
+                  postgres:
+                    image: postgres:13
+                    environment:
+                      - POSTGRES_DB=my_store
+                      - POSTGRES_USER=nico
+                      - POSTGRES_PASSWORD=admin123
+                    ports:
+                      - 5432:5432
+                
+            </pre>
+
+            <pre class="prettyprint">
+            
+                > docker-compose up -d postgres
+                > sudo docker-compose up -d postgres
+                > sudo docker-compose ps
+                > sudo docker-compose down
+                > sudo docker-compose ps
+                > sudo docker-compose up -d postgres
+            </pre>
+        </section>
+        <hr>
+
+        <section class="container">
+            <h3>Sección 5 de 27 - Explorando Postgres: interfaces gráficas vs. terminal</h3>
+            <pre class="prettyprint">
+            
+                > sudo docker-compose exec postgres bash
+                > psql -h localhost -d my_store -U nico
+                > \d+
+                > \q
+                > exit
+            </pre>
+
+            <pre class="prettyprint">
+            
+                pgadmin:
+                image: dpage/pgadmin4
+                environment:
+                  - PGADMIN_DEFAULT_EMAIL=admin@mail.com
+                  - PGADMIN_DEFAULT_PASSWORD=root
+                ports:
+                  - 5050:80
+            </pre>
+
+            <pre class="prettyprint">
+            
+                > sudo docker-compose up -d pgadmin
+                > sudo docker-compose ps
+            </pre>
+            <p>
+                <a href="http://localhost:5050/">http://localhost:5050/</a>
+                <br>
+                Crear un nuevo servidor
+            </p>
+
+            <pre class="prettyprint">
+            
+                > sudo docker ps
+                > sudo docker inspect ID_CONTENEDOR ANTERIOR
+
+                "IPAddress": "172.19.0.2"
+            </pre>
+        </section>
+        <hr>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
