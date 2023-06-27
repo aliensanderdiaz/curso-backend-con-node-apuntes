@@ -1439,7 +1439,910 @@
         <hr>
 
         <section class="container">
-            <h3>Sección 17 de 27 - Relaciones uno a muchos</h3>
+            <h3>Sección 18 de 27 - Relaciones uno a muchos</h3>
+            <pre class="prettyprint">
+            
+              const { Model, DataTypes, Sequelize } = require('sequelize')
+
+              const { CATEGORY_TABLE } = require('./category.model')
+
+              const PRODUCT_TABLE = 'products'
+
+              const ProductSchema = {
+                id: {
+                  allowNull: false,
+                  autoIncrement: true,
+                  primaryKey: true,
+                  type: DataTypes.INTEGER
+                },
+                name: {
+                  allowNull: false,
+                  type: DataTypes.STRING,
+                  unique: true
+                },
+                image: {
+                  allowNull: false,
+                  type: DataTypes.STRING,
+                },
+                description: {
+                  allowNull: false,
+                  type: DataTypes.TEXT,
+                },
+                price: {
+                  allowNull: false,
+                  type: DataTypes.INTEGER,
+                },
+                createdAt: {
+                  allowNull: false,
+                  type: DataTypes.DATE,
+                  field: 'created_at',
+                  defaultValue: Sequelize.NOW
+                },
+                categoryId: {
+                  field: 'category_id',
+                  allowNull: false,
+                  type: DataTypes.INTEGER,
+                  references: {
+                    model: CATEGORY_TABLE,
+                    key: 'id'
+                  },
+                  onUpdate: 'CASCADE',
+                  onDelete: 'SET NULL'
+                }
+              }
+
+              class Product extends Model {
+                static associate(models) {
+                  this.belongsTo(models.Category, {as: 'category'})
+                }
+
+                static config(sequelize) {
+                  return {
+                    sequelize,
+                    tableName: PRODUCT_TABLE,
+                    modelName: 'Product',
+                    timestamps: false
+                  }
+                }
+              }
+
+              module.exports = { PRODUCT_TABLE, ProductSchema, Product }
+
+            </pre>
+
+            <pre class="prettyprint">
+            
+              const { Model, DataTypes, Sequelize } = require('sequelize')
+
+              const CATEGORY_TABLE = 'categories'
+
+              const CategorySchema = {
+                id: {
+                  allowNull: false,
+                  autoIncrement: true,
+                  primaryKey: true,
+                  type: DataTypes.INTEGER
+                },
+                name: {
+                  allowNull: false,
+                  type: DataTypes.STRING,
+                  unique: true
+                },
+                image: {
+                  allowNull: false,
+                  type: DataTypes.STRING,
+                },
+                createdAt: {
+                  allowNull: false,
+                  type: DataTypes.DATE,
+                  field: 'created_at',
+                  defaultValue: Sequelize.NOW
+                },
+              }
+
+              class Category extends Model {
+                static associate(models) {
+                  this.hasMany(models.Product, {
+                    as: 'products',
+                    foreignKey: 'categoryId'
+                  })
+                }
+
+                static config(sequelize) {
+                  return {
+                    sequelize,
+                    tableName: CATEGORY_TABLE,
+                    modelName: 'Category',
+                    timestamps: false
+                  }
+                }
+              }
+
+              module.exports = { CATEGORY_TABLE, CategorySchema, Category }
+
+            </pre>
+
+            <pre class="prettyprint">
+            
+              function setupModels(sequelize) {
+                User.init(UserSchema, User.config(sequelize))
+                Customer.init(CustomerSchema, Customer.config(sequelize))
+                Product.init(ProductSchema, Product.config(sequelize))
+                Category.init(CategorySchema, Category.config(sequelize))
+
+                User.associate(sequelize.models)
+                Customer.associate(sequelize.models)
+                Product.associate(sequelize.models)
+                Category.associate(sequelize.models)
+              }
+            </pre>
+
+            <pre class="prettyprint">
+            
+                > npm run migrations:generate products
+            </pre>
+
+            <pre class="prettyprint">
+            
+              'use strict';
+
+              const { CategorySchema, CATEGORY_TABLE } = require('./../models/category.model')
+              const { ProductSchema, PRODUCT_TABLE } = require('./../models/product.model')
+              
+              /** @type {import('sequelize-cli').Migration} */
+              module.exports = {
+                async up (queryInterface, Sequelize) {
+                  /**
+                   * Add altering commands here.
+                   *
+                   * Example:
+                   * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
+                  */
+                  await queryInterface.createTable(CATEGORY_TABLE, CategorySchema);
+                  await queryInterface.createTable(PRODUCT_TABLE, ProductSchema);
+                },
+              
+                async down (queryInterface, Sequelize) {
+                  /**
+                   * Add reverting commands here.
+                   *
+                   * Example:
+                   * await queryInterface.dropTable('users');
+                  */
+                  await queryInterface.dropTable(CATEGORY_TABLE);
+                  await queryInterface.dropTable(PRODUCT_TABLE);
+                }
+              };
+              
+            </pre>
+
+            <pre class="prettyprint">
+            
+                > npm run migrations:run
+            </pre>
+        </section>
+        <hr>
+
+        <section class="container">
+            <h3>Sección 19 de 27 - Resolviendo relaciones uno a muchos</h3>
+            <pre class="prettyprint">
+            
+              async create(data) {
+                const newCategory = await models.Category.create(data)
+                return newCategory;
+              }
+            </pre>
+            <pre class="prettyprint">
+
+              // POST -> http://localhost:3000/api/v1/categories
+            
+              {
+                "name": "Category 1",
+                "image": "http://placeimg.com/640/480"
+              }
+            </pre>
+
+            <pre class="prettyprint">
+            
+              async create(data) {
+                const newProduct = await models.Product.create(data)
+                return newProduct;
+              }
+            
+              async find() {
+                const products = await models.Product.findAll()
+                return products;
+              }    
+
+            </pre>
+
+            <pre class="prettyprint">
+            
+              const categoryId = Joi.number().integer();
+
+              const createProductSchema = Joi.object({
+                name: name.required(),
+                price: price.required(),
+                description: description.required(),
+                image: image.required(),
+                categoryId: categoryId.required(),
+              });
+              
+              const updateProductSchema = Joi.object({
+                name: name,
+                price: price,
+                description: description,
+                categoryId: categoryId,
+                image: image
+              });
+            </pre>
+
+            <pre class="prettyprint">
+            
+              {
+                "name": "Camisa",
+                "description": "test test test",
+                "price": 500,
+                "image": "http://placeimg.com/640/480",
+                "categoryId": 1
+              }
+            </pre>
+
+            <pre class="prettyprint">
+            
+              async find() {
+                const products = await models.Product.findAll({
+                  include: ['category']
+                })
+                return products;
+              }
+            </pre>
+
+            <pre class="prettyprint">
+            
+              async findOne(id) {
+                const category = await models.Category.findByPk( id, {
+                  include: ['products']
+                } )
+                return category;
+              }
+            </pre>
+        </section>
+        <hr>
+
+        <section class="container">
+            <h3>Sección 20 de 27 - órdenes de compra</h3>
+            <pre class="prettyprint">
+            
+              const { Model, DataTypes, Sequelize } = require('sequelize')
+              const { CUSTOMER_TABLE } = require('./customer.model')
+              
+              const ORDER_TABLE = 'orders'
+              
+              const OrderSchema = {
+                id: {
+                  allowNull: false,
+                  autoIncrement: true,
+                  primaryKey: true,
+                  type: DataTypes.INTEGER
+                },
+                createdAt: {
+                  allowNull: false,
+                  type: DataTypes.DATE,
+                  field: 'created_at',
+                  defaultValue: Sequelize.NOW
+                },
+                customerId: {
+                  field: 'customer_id',
+                  allowNull: false,
+                  type: DataTypes.INTEGER,
+                  references: {
+                    model: CUSTOMER_TABLE,
+                    key: 'id'
+                  },
+                  onUpdate: 'CASCADE',
+                  onDelete: 'SET NULL'
+                }
+              }
+              
+              class Order extends Model {
+                static associate(models) {
+                  this.belongsTo(models.Customer, {
+                    as: 'customer'
+                  })
+                }
+              
+                static config(sequelize) {
+                  return {
+                    sequelize,
+                    tableName: ORDER_TABLE,
+                    modelName: 'Order',
+                    timestamps: false
+                  }
+                }
+              }
+              
+              module.exports = { ORDER_TABLE, OrderSchema, Order }
+              
+            </pre>
+
+            <pre class="prettyprint">
+            
+              class Customer extends Model {
+                static associate(models) {
+                  this.belongsTo(models.User, {as: 'user'})
+                  this.hasMany(models.Order, {
+                    as: 'orders',
+                    foreignKey: 'customerId'
+                  })
+                }
+            </pre>
+
+            <pre class="prettyprint">
+            
+              function setupModels(sequelize) {
+                User.init(UserSchema, User.config(sequelize))
+                Customer.init(CustomerSchema, Customer.config(sequelize))
+                Product.init(ProductSchema, Product.config(sequelize))
+                Category.init(CategorySchema, Category.config(sequelize))
+                Order.init(OrderSchema, Order.config(sequelize))
+              
+                User.associate(sequelize.models)
+                Customer.associate(sequelize.models)
+                Product.associate(sequelize.models)
+                Category.associate(sequelize.models)
+                Order.associate(sequelize.models)
+              }
+            </pre>
+
+            <pre class="prettyprint">
+            
+                > npm run migrations:generate order
+            </pre>
+
+            <pre class="prettyprint">
+            
+              'use strict';
+              const { OrderSchema, ORDER_TABLE } = require('./../models/order.model')
+              /** @type {import('sequelize-cli').Migration} */
+              module.exports = {
+                async up (queryInterface, Sequelize) {
+                  /**
+                   * Add altering commands here.
+                   *
+                   * Example:
+                   * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
+                   */
+                  await queryInterface.createTable(ORDER_TABLE, OrderSchema);
+                },
+              
+                async down (queryInterface, Sequelize) {
+                  /**
+                   * Add reverting commands here.
+                   *
+                   * Example:
+                   * await queryInterface.dropTable('users');
+                   */
+                  await queryInterface.dropTable(ORDER_TABLE);
+                }
+              };
+              
+            </pre>
+
+            <pre class="prettyprint">
+            
+                > npm run migrations:run
+            </pre>
+
+            <pre class="prettyprint">
+            
+              async create(data) {
+                const newOrder = await models.Order.create(data)
+                return newOrder;
+              }
+            </pre>
+
+            <pre class="prettyprint">
+            
+              const Joi = require('joi');
+
+              const id = Joi.number().integer();
+              const customerId = Joi.number().integer();
+              
+              const getOrderSchema = Joi.object({
+                id: id.required(),
+              });
+              
+              const createOrderSchema = Joi.object({
+                customerId: customerId.required(),
+              });
+              
+              module.exports = { getOrderSchema, createOrderSchema }
+            </pre>
+
+            <pre class="prettyprint">
+            
+              const express = require('express');
+
+              const OrderService = require('./../services/order.service');
+              const validatorHandler = require('./../middlewares/validator.handler');
+              const { createOrderSchema, getOrderSchema } = require('./../schemas/order.schema');
+              
+              const router = express.Router();
+              const service = new OrderService();
+              
+              router.get('/', async (req, res, next) => {
+                try {
+                  const orders = await service.find();
+                  res.json(orders);
+                } catch (error) {
+                  next(error);
+                }});
+              
+              router.post('/',
+                validatorHandler(createOrderSchema, 'body'),
+                async (req, res, next) => {
+                  try {
+                    const body = req.body;
+                    const newOrder = await service.create(body);
+                    res.status(201).json(newOrder);
+                  } catch (error) {
+                    next(error);
+                  }
+                }
+              );
+              
+              router.get('/:id',
+                validatorHandler(getOrderSchema, 'params'),
+                async (req, res, next) => {
+                  try {
+                    const { id } = req.params;
+                    const user = await service.findOne(id);
+                    res.json(user);
+                  } catch (error) {
+                    next(error);
+                  }
+                }
+              );
+              
+              module.exports = router;
+              
+            </pre>
+
+            <pre class="prettyprint">
+            
+              async find() {
+                const rta = await models.Order.findAll({
+                  include: ['customer']
+                })
+                return rta;
+              }
+            
+              async findOne(id) {
+                const order = await models.Order.findByPk(id, {
+                  include: [{
+                    association: 'customer',
+                    include: [ 'user']
+                  }]
+                })
+                if (!order) {
+                  throw boom.notFound('order not found')
+                }
+                return order;
+              }
+            </pre>
+        </section>
+        <hr>
+
+        <section class="container">
+            <h3>Sección 21 de 27 - Relaciones muchos a muchos</h3>
+            <pre class="prettyprint">
+            
+              const { Model, DataTypes, Sequelize } = require('sequelize')
+              const { PRODUCT_TABLE } = require('./product.model')
+              const { ORDER_TABLE } = require('./order.model')
+              
+              const ORDER_PRODUCT_TABLE = 'orders_products'
+              
+              const OrderProductSchema = {
+                id: {
+                  allowNull: false,
+                  autoIncrement: true,
+                  primaryKey: true,
+                  type: DataTypes.INTEGER
+                },
+                createdAt: {
+                  allowNull: false,
+                  type: DataTypes.DATE,
+                  field: 'created_at',
+                  defaultValue: Sequelize.NOW
+                },
+                amount: {
+                  allowNull: false,
+                  type: DataTypes.INTEGER
+                },
+                orderId: {
+                  field: 'order_id',
+                  allowNull: false,
+                  type: DataTypes.INTEGER,
+                  references: {
+                    model: ORDER_TABLE,
+                    key: 'id'
+                  },
+                  onUpdate: 'CASCADE',
+                  onDelete: 'SET NULL'
+                },
+                productId: {
+                  field: 'product_id',
+                  allowNull: false,
+                  type: DataTypes.INTEGER,
+                  references: {
+                    model: PRODUCT_TABLE,
+                    key: 'id'
+                  },
+                  onUpdate: 'CASCADE',
+                  onDelete: 'SET NULL'
+                },
+              }
+              
+              class OrderProduct extends Model {
+                static associate(models) {
+              
+                }
+              
+                static config(sequelize) {
+                  return {
+                    sequelize,
+                    tableName: ORDER_PRODUCT_TABLE,
+                    modelName: 'OrderProduct',
+                    timestamps: false
+                  }
+                }
+              }
+              
+              module.exports = { ORDER_PRODUCT_TABLE, OrderProductSchema, OrderProduct }
+              
+            </pre>
+
+            <pre class="prettyprint">
+            
+              > npm run migrations:generate order-product
+            </pre>
+
+            <pre class="prettyprint">
+            
+              'use strict';
+
+              const { OrderProductSchema, ORDER_PRODUCT_TABLE } = require('./../models/order-product.model')
+              
+              /** @type {import('sequelize-cli').Migration} */
+              module.exports = {
+                async up (queryInterface, Sequelize) {
+                  /**
+                   * Add altering commands here.
+                   *
+                   * Example:
+                   * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
+                  */
+                  await queryInterface.createTable(ORDER_PRODUCT_TABLE, OrderProductSchema);
+                },
+              
+                async down (queryInterface, Sequelize) {
+                  /**
+                   * Add reverting commands here.
+                   *
+                   * Example:
+                   * await queryInterface.dropTable('users');
+                  */
+                  await queryInterface.dropTable(ORDER_PRODUCT_TABLE);
+                }
+              };
+              
+            </pre>
+
+            <pre class="prettyprint">
+            
+              > npm run migrations:run
+            </pre>
+
+            <pre class="prettyprint">
+            
+              class Order extends Model {
+                static associate(models) {
+                  this.belongsTo(models.Customer, {
+                    as: 'customer'
+                  })
+                  this.belongsToMany(models.Product, {
+                    as: 'items',
+                    through: models.OrderProduct,
+                    foreignKey: 'orderId',
+                    otherKey: 'productId'
+                  })
+                }
+            </pre>
+        </section>
+        <hr>
+
+        <section class="container">
+            <h3>Sección 22 de 27 - Resolviendo relaciones muchos a muchos</h3>
+            <pre class="prettyprint">
+            
+              const orderId = Joi.number().integer();
+              const productId = Joi.number().integer();
+              const amount = Joi.number().integer().min(1);
+              
+              const getOrderSchema = Joi.object({
+                id: id.required(),
+              });
+              
+              const createOrderSchema = Joi.object({
+                customerId: customerId.required(),
+              });
+              
+              const addItemSchema = Joi.object({
+                orderId: orderId.required(),
+                productId: productId.required(),
+                amount: amount.required(),
+              });
+            </pre>
+
+            <pre class="prettyprint">
+            
+              async addItem(data) {
+                const newItem = await models.OrderProduct.create(data)
+                return newItem;
+              }
+
+              ...
+            
+              async findOne(id) {
+                const order = await models.Order.findByPk(id, {
+                  include: [{
+                    association: 'customer',
+                    include: [ 'user']
+                  },
+                  'items'
+                ]
+                })
+                if (!order) {
+                  throw boom.notFound('order not found')
+                }
+                return order;
+              }
+            </pre>
+
+            <pre class="prettyprint">
+            
+              router.post('/add-item',
+              validatorHandler(addItemSchema, 'body'),
+              async (req, res, next) => {
+                try {
+                  const body = req.body;
+                  const newItem = await service.addItem(body);
+                  res.status(201).json(newItem);
+                } catch (error) {
+                  next(error);
+                }
+              }
+            );
+            </pre>
+
+            <pre class="prettyprint">
+            
+                POST => http://localhost:3000/api/v1/orders/add-item
+
+                {
+                  "orderId": 1,
+                  "productId": 2,
+                  "amount": 10
+                }
+            </pre>
+
+            <pre class="prettyprint">
+            
+              const OrderSchema = {
+                id: {
+                  allowNull: false,
+                  autoIncrement: true,
+                  primaryKey: true,
+                  type: DataTypes.INTEGER
+                },
+                createdAt: {
+                  allowNull: false,
+                  type: DataTypes.DATE,
+                  field: 'created_at',
+                  defaultValue: Sequelize.NOW
+                },
+                customerId: {
+                  field: 'customer_id',
+                  allowNull: false,
+                  type: DataTypes.INTEGER,
+                  references: {
+                    model: CUSTOMER_TABLE,
+                    key: 'id'
+                  },
+                  onUpdate: 'CASCADE',
+                  onDelete: 'SET NULL'
+                },
+                total: {
+                  type: DataTypes.VIRTUAL,
+                  get() {
+                    if (this.items.length > 0) {
+                      return this.items.reduce((total, item) => {
+                        return total + ( item.price * item.OrderProduct.amount )
+                      }, 0)
+                    }
+                    return 0
+                  }
+                }
+              }
+            </pre>
+        </section>
+        <hr>
+
+        <section class="container">
+            <h3>Sección 23 de 27 - Paginación</h3>
+            <pre class="prettyprint">
+            
+              const limit = Joi.number().integer();
+              const offset = Joi.number().integer();
+              
+              ...
+
+              const queryProductSchema = Joi.object({
+                limit,
+                offset
+              });
+            </pre>
+
+            <pre class="prettyprint">
+            
+            router.get('/',
+              validatorHandler(queryProductSchema, 'query'),
+              async (req, res, next) => {
+              try {
+                const products = await service.find(req.query);
+                res.json(products);
+              } catch (error) {
+                next(error);
+              }
+            });
+            </pre>
+
+            <pre class="prettyprint">
+
+              // product.service.js
+            
+              async find(query) {
+                const options = {
+                  include: ['category']
+                }
+                const { limit, offset } = query
+                if (limit && offset) {
+                  options.limit = limit
+                  options.offset = offset
+                }
+                const products = await models.Product.findAll(options)
+                return products;
+              }
+            </pre>
+
+            <pre class="prettyprint">
+            
+                GET => localhost:3000/api/v1/products?limit=5&offset=10
+            </pre>
+        </section>
+        <hr>
+
+        <section class="container">
+            <h3>Sección 24 de 27 - Filtrando Precios con operadores</h3>
+            <pre class="prettyprint">
+            
+              const queryProductSchema = Joi.object({
+                limit,
+                offset,
+                price
+              });
+            </pre>
+
+            <pre class="prettyprint">
+            
+              async find(query) {
+                const options = {
+                  include: ['category'],
+                  where: {}
+                }
+                const { limit, offset } = query
+                if (limit && offset) {
+                  options.limit = limit
+                  options.offset = offset
+                }
+            
+                const { price } = query
+                if (price) {
+                  options.where.price = price
+                }
+            
+                const products = await models.Product.findAll(options)
+                return products;
+              }
+            </pre>
+
+            <pre class="prettyprint">
+            
+              const price_min = Joi.number().integer();
+              const price_max = Joi.number().integer();
+              
+              ...
+              
+              const queryProductSchema = Joi.object({
+                limit,
+                offset,
+                price,
+                price_min,
+                price_max: price_max.when('price_min', {
+                  is: Joi.number().integer(),
+                  then: Joi.required()
+                })
+              });
+            </pre>
+
+            <pre class="prettyprint">
+            
+              const { Op } = require('sequelize');
+
+              ...
+              
+                async find(query) {
+                  const options = {
+                    include: ['category'],
+                    where: {}
+                  }
+                  const { limit, offset } = query
+                  if (limit && offset) {
+                    options.limit = limit
+                    options.offset = offset
+                  }
+              
+                  const { price } = query
+                  if (price) {
+                    options.where.price = price
+                  }
+              
+                  const { price_min, price_max } = query
+                  if (price_min && price_max) {
+                    options.where.price = {
+                      [Op.gte]: price_min,
+                      [Op.lte]: price_max
+                    }
+                  }
+              
+                  const products = await models.Product.findAll(options)
+                  return products;
+                }
+            </pre>
+
+            <pre class="prettyprint">
+            
+                GET => localhost:3000/api/v1/products?price_min=10&price_max=12
+            </pre>
+        </section>
+        <hr>
+
+        <section class="container">
+            <h3>Sección 25 de 27 - Deploy en Heroku</h3>
+            
+        </section>
+        <hr>
+
+        <section class="container">
+            <h3>Sección 26 de 27 - Consideraciones al hacer migraciones</h3>
+            
+        </section>
+        <hr>
+
+        <section class="container">
+            <h3>Sección 27 de 27 - Toma con el Curso de Backend con Node.js: Autenticación con Passport.js y JWT</h3>
             
         </section>
         <hr>
