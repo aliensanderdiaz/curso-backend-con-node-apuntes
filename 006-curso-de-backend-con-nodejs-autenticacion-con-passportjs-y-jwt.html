@@ -54,7 +54,109 @@
                 > touch .env
                 > sudo docker-compose up -d postgres
                 > sudo docker-compose up -d pgadmin
+                > sudo docker-compose ps
                 > npm run migrations:run
+            </pre>
+            <p>
+                En esta parte me toca cambiar el puerto de entrada a postgres de 5432 a 5433
+                <br>
+                Hago el cambio en el archivo de docker y por supuesto en la variable de entorno para la conexión.
+            </p>
+        </section>
+        <hr>
+
+        <section class="container">
+            <h3>Sección 4 de 20 - Middleware de verificación</h3>
+            <pre class="prettyprint">
+            
+                // auth.handler
+
+                const boom = require('@hapi/boom');
+
+                const { config } = require('./../config/config')
+                
+                function checkApiKey(req, res, next) {
+                
+                  const apiKey = req.headers['api']
+                
+                  if (apiKey === config.apiKey) {
+                    next()
+                  } else {
+                    next(boom.unauthorized())
+                  }
+                }
+                
+                module.exports = { checkApiKey }
+                
+            </pre>
+
+            <pre class="prettyprint">
+            
+                app.get('/', checkApiKey, (req, res) => {
+                    res.send('Hola mi server en express');
+                  });
+            </pre>
+        </section>
+        <hr>
+
+        <section class="container">
+            <h3>Sección 5 de 20 - Hashing de contraseñas con bcryptjs</h3>
+            <pre class="prettyprint">
+            
+                > npm i bcrypt
+            </pre>
+        </section>
+        <hr>
+
+        <section class="container">
+            <h3>Sección 6 de 20 - Implementando hashing para usuarios</h3>
+            <pre class="prettyprint">
+            
+                // user
+
+                async create(data) {
+                    const hash = await bcrypt.hash(data.password, 10)
+                    const newUser = await models.User.create({
+                      ...data,
+                      password: hash
+                    });
+                    delete newUser.dataValues.password
+                    return newUser;
+                  }
+            </pre>
+            <pre class="prettyprint">
+            
+                // customer
+
+                async create(data) {
+                    const hash = await bcrypt.hash(data.user.password, 10)
+                    const newData = {
+                      ...data,
+                      user: {
+                        ...data.user,
+                        password: hash
+                      }
+                    }
+                    const newCustomer = await models.Customer.create(newData, {
+                      include: ['user']
+                    });
+                    delete newCustomer.dataValues.user.dataValues.password
+                    return newCustomer;
+                  }
+            </pre>
+        </section>
+        <hr>
+
+        <section class="container">
+            <h3>Sección 7 de 20 - Implementando login con passport.js</h3>
+            <pre class="prettyprint">
+            
+                > npm i passport passport-local
+                > mkdir utils
+                > mkdir utils/auth
+                > mkdir utils/auth/strategies
+                > touch utils/auth/index.js
+                
             </pre>
         </section>
         <hr>
